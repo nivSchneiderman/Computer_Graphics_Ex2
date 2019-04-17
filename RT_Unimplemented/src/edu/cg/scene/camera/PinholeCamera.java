@@ -6,6 +6,11 @@ import edu.cg.algebra.Vec;
 
 public class PinholeCamera {
 	//TODO Add your fields
+	Point cameraPosition;
+	Vec towardsVec;
+	Vec upVec;
+	double distanceToPlain;
+	
 	
 	/**
 	 * Initializes a pinhole camera model with default resolution 200X200 (RxXRy) and image width 2.
@@ -17,6 +22,10 @@ public class PinholeCamera {
 	 */
 	public PinholeCamera(Point cameraPosition, Vec towardsVec, Vec upVec, double distanceToPlain) {
 		// TODO: Initialize your fields
+		this.cameraPosition = cameraPosition;
+		this.towardsVec = towardsVec;
+		this.upVec = upVec;
+		distanceToPlain = distanceToPlain;
 	}
 	/**
 	 * Initializes the resolution and width of the image.

@@ -184,6 +184,21 @@ public class Scene {
 	private Vec calcColor(Ray ray, int recusionLevel) {
 		// TODO: Implement this method.
 		//       This is the recursive method in RayTracing.
+		
+		Point hit = findIntersection(ray);
+		
+		// Assuming there is no emissionColor
+		Vec color = this.ambient;
+		for (Light light : lightSources) {
+			//color += 
+		}
+		
+		
 		throw new UnimplementedMethodException("calcColor");
+	}
+	
+	// TODO: implement that
+	private Point findIntersection(Ray ray) {
+		throw new UnimplementedMethodException("findIntersection");
 	}
 }
