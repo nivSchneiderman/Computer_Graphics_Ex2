@@ -181,24 +181,57 @@ public class Scene {
 		});
 	}
 	
-	private Vec calcColor(Ray ray, int recusionLevel) {
+	private Vec calcColor(Ray ray, int recursionLevel) {
 		// TODO: Implement this method.
 		//       This is the recursive method in RayTracing.
 		
 		Point hit = findIntersection(ray);
 		
-		// Assuming there is no emissionColor
+		// Ambient calculation 
+		// we assume that there is no emission color
 		Vec color = this.ambient;
+		
 		for (Light light : lightSources) {
-			//color += 
+			color.add(calcDiffuseColor(hit, ray, light));
+			color.add(calcSpecularColor(hit, ray, light));
 		}
 		
-		
+		 recursionLevel++;
+		 if (recursionLevel > maxRecursionLevel)
+			 return color;
+		 
+		 //reflective and refractive calculations
+		 Ray rRay = constractReflectiveRayR(ray, hit);
+		 color.add(calcColor(rRay, recursionLevel));
+		 Ray tRay = constractRefractiveRayT(ray, hit);
+		 calcColor(rRay, recursionLevel);
+		 
+		 
 		throw new UnimplementedMethodException("calcColor");
 	}
 	
 	// TODO: implement that
 	private Point findIntersection(Ray ray) {
 		throw new UnimplementedMethodException("findIntersection");
+	}
+	
+	// TODO: implement that
+	private Vec calcDiffuseColor(Point hit, Ray ray, Light light) {
+		throw new UnimplementedMethodException("calcDiffuseColor");
+	}
+	
+	// TODO: implement that
+	private Vec calcSpecularColor(Point hit, Ray ray, Light light) {
+		throw new UnimplementedMethodException("calcSpecularColor");
+	}
+	
+	// TODO: implement that
+	private Ray constractReflectiveRayR(Ray ray, Point hit) {
+		throw new UnimplementedMethodException("constractReflectiveRayR");
+	}
+	
+	// TODO: implement that
+	private Ray constractRefractiveRayT(Ray ray, Point hit) {
+		throw new UnimplementedMethodException("constractReflectiveRayT");
 	}
 }
