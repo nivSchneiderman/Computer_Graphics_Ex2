@@ -198,7 +198,7 @@ public class Scene {
 		Vec color = surface.Ka().mult(this.ambient);
 		
 		for (Light light : lightSources) {
-			color.add(surface.Kd().mult(calcDiffuseColor(hit, ray, light)));
+			color.add(surface.Kd().mult(calcDiffuseColor(hitPoint ,hit, ray, light)));
 			color.add(surface.Ks().mult(calcSpecularColor(hit, ray, light)));
 		}
 		
@@ -232,17 +232,17 @@ public class Scene {
 	}
 	
 	// TODO: implement that
-	private Vec calcDiffuseColor(Hit hit, Ray ray, Light light) {
-		if (light instanceof PointLight) {
-			PointLight pointLight = (PointLight)light;
-			
-		}
+	private Vec calcDiffuseColor(Point hitPoint,Hit hit, Ray ray, Light light) {
+		Ray rayToLight = light.rayToLight(hitPoint);
+		Vec lightIntensity = light.intensity(hitPoint, rayToLight);
+		double nDotL = hit.getNormalToSurface().dot(rayToLight.direction());
+		Vec diffuseColor = lightIntensity.mult(nDotL);
 		
-		throw new UnimplementedMethodException("calcDiffuseColor");
+		return diffuseColor;
 	}
 	
 	// TODO: implement that
-	private Vec calcSpecularColor(Point hit, Ray ray, Light light) {
+	private Vec calcSpecularColor(Hit hit, Ray ray, Light light) {
 		throw new UnimplementedMethodException("calcSpecularColor");
 	}
 	
