@@ -1,6 +1,5 @@
 package edu.cg.scene.lightSources;
 
-import edu.cg.UnimplementedMethodException;
 import edu.cg.algebra.Point;
 import edu.cg.algebra.Ray;
 import edu.cg.algebra.Vec;
@@ -34,6 +33,15 @@ public class Spotlight extends PointLight {
 	@Override
 	public Spotlight initDecayFactors(double q, double l, double c) {
 		return (Spotlight)super.initDecayFactors(q, l, c);
+	}
+	
+	/**
+	 * Constructs a ray originated from the given point to the light.
+	 * @param fromPoint - The initial point of the ray
+	 * @return a ray origniated from 'fromPoint' to the light source.
+	 */
+	public Ray rayToLight(Point fromPoint) {
+		return new Ray(fromPoint, this.position.sub(fromPoint));
 	}
 	
 	/**

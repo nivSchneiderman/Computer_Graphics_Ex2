@@ -20,13 +20,6 @@ public abstract class Light {
 	}
 	
 	/**
-	 * Constructs a ray originated from the given point to the light.
-	 * @param fromPoint - The initial point of the ray
-	 * @return a ray origniated from 'fromPoint' to the light source.
-	 */
-	public abstract Ray rayToLight(Point fromPoint);
-	
-	/**
 	 * Checks if the given surface occludes the light-source. The surface occludes the light source
 	 * if the given ray first intersects the surface before reaching the light source.
 	 * @param surface -The given surface
@@ -42,4 +35,6 @@ public abstract class Light {
 	 * @return A vector representing the light intensity (the r,g and b channels). 
 	 */
 	public abstract Vec intensity(Point hittingPoint, Ray rayToLight);
+
+	public abstract Ray rayToLight(Point source);
 }

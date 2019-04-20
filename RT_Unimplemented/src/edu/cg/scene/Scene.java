@@ -166,6 +166,10 @@ public class Scene {
 		executor.shutdown();
 		
 		this.logger.log("Ray tracing of " + name + " has been completed.");
+		//TODO: delete that:
+		this.logger.log("background: " + backgroundC);
+		this.logger.log("surfaces: " + surfacesC);
+		this.logger.log("countHits: " + countHits);
 		
 		executor = null;
 		this.logger = null;
@@ -183,14 +187,19 @@ public class Scene {
 			return color.toColor();
 		});
 	}
+	private int backgroundC = 0;
+	private int surfacesC = 0;
 	
 	//TODO: add shadows affect
 	private Vec calcColor(Ray ray, int recursionLevel) {
 		Hit hit = findIntersection(ray);
 
-		if (hit == null)
+		if (hit == null) {
+			backgroundC++;
 			return this.backgroundColor;
+		}
 		
+		surfacesC++;
 		Point hitPoint = ray.source().add(ray.direction().mult(hit.t()));
 		Surface surface = hit.getSurface();
 		
@@ -199,26 +208,28 @@ public class Scene {
 		Vec color = surface.Ka().mult(this.ambient);
 		
 		for (Light light : lightSources) {
-			color.add(surface.Kd().mult(calcDiffuseColor(hitPoint, hit, ray, light)));
-			color.add(surface.Ks().mult(calcSpecularColor(hitPoint, hit, ray, light, surface)));
+			if (true || !light.isOccludedBy(surface, light.rayToLight(ray.source()))){
+				color.add(surface.Kd().mult(calcDiffuseColor(hitPoint, hit, ray, light)));
+				color.add(surface.Ks().mult(calcSpecularColor(hitPoint, hit, ray, light, surface)));
+			}
 		}
 		
 		 recursionLevel++;
-		 if (recursionLevel > maxRecursionLevel)
+		 if (recursionLevel >= maxRecursionLevel)
 			 return color;
 		 
 		 // reflective calculations
 		 Ray rRay = constractReflectiveRayR(ray, hitPoint, hit);
 		 color.add(calcColor(rRay, recursionLevel).mult(surface.reflectionIntensity()));
-		 // refractive calculations - 
+		 // refractive calculations
 		 Ray tRay = constractRefractiveRayT(ray, hitPoint, hit, surface);
 		 color.add(calcColor(tRay, recursionLevel).mult(surface.refractionIntensity()));
 		 
 		 return color;
 	}
-	
+	public int countHits = 0;
 	// TODO: implement intersect in Surface class
-	private Hit findIntersection(Ray ray) {
+	public Hit findIntersection(Ray ray) {
 		Hit minHit = new Hit(Double.MAX_VALUE, new Vec(1,1,1));
 		Hit hit = null;
 		
@@ -226,13 +237,14 @@ public class Scene {
 			hit = surface.intersect(ray);
 			if (hit != null && hit.compareTo(minHit) == -1) {
 				minHit = hit;
+				minHit.setSurface(surface);
+				countHits++;
 			}
 		}
 		
-		return hit.t() != Double.MAX_VALUE ? minHit : null;
+		return minHit.t() == Double.MAX_VALUE ? null : minHit;
 	}
 	
-	// TODO: implement that
 	private Vec calcDiffuseColor(Point hitPoint,Hit hit, Ray ray, Light light) {
 		Ray rayToLight = light.rayToLight(hitPoint);
 		Vec lightIntensity = light.intensity(hitPoint, rayToLight);
@@ -243,7 +255,6 @@ public class Scene {
 		return diffuseColor;
 	}
 	
-	// TODO: implement that
 	private Vec calcSpecularColor(Point hitPoint, Hit hit, Ray ray, Light light, Surface surface) {
 		Ray rayToLight = light.rayToLight(hitPoint);
 		Vec lightIntensity = light.intensity(hitPoint, rayToLight);

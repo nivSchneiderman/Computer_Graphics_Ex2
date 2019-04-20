@@ -44,7 +44,6 @@ public class PointLight extends Light {
 		return this;
 	}
 
-	//TODO: add some methods
 	/**
 	 * Constructs a ray originated from the given point to the light.
 	 * @param fromPoint - The initial point of the ray

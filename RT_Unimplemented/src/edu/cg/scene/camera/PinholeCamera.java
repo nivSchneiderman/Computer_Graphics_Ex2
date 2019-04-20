@@ -30,24 +30,18 @@ public class PinholeCamera {
 	public int Ry;
 	
 	
-	public PinholeCamera(Point cameraPosition, Vec towardsVec, Vec upVec, double distanceToPlain) {
-		
+	public PinholeCamera(Point cameraPosition, Vec towardsVec, Vec upVec, double distanceToPlane) {
 		//set p0
 		p0 = cameraPosition;
-		
 		//set towards and normalize
 		VTowards = towardsVec.normalize();
-		
 		//find center point 
-		imageCenter = p0.add(distanceToPlain, VTowards);
-		
+		imageCenter = p0.add(distanceToPlane, VTowards);
 		//find V right 
 		VRight = (VTowards.cross(upVec)).normalize();
-		
 		//correct Vup
 		Vup = (VRight.cross(VTowards)).normalize();
-	    
-        		
+		this.distanceToPlane = distanceToPlane;
 	}
 	/**
 	 * Initializes the resolution and width of the image.
@@ -55,12 +49,10 @@ public class PinholeCamera {
 	 * @param width - the number of pixels in the x direction.
 	 * @param viewPlainWidth - the width of the image plain in world coordinates.
 	 */
-	public void initResolution(int height, int width, double viewPlainWidth) {
-	         
+	public void initResolution(int height, int width, double viewPlainWidth) {   
 		Rx = width;
 		Ry= height;
 		pixcelSize = viewPlainWidth /(double)Rx;
-		
 	}
 
 	/**
@@ -73,8 +65,8 @@ public class PinholeCamera {
 
 		Vec right = VRight.mult(x - Math.floor((double)Rx/2)*pixcelSize);
 		Vec up = Vup.mult(y - Math.floor((double)Ry/2)*pixcelSize);
-		return p0.add(right.add(up.neg()));
 		
+		return imageCenter.add(right.add(up.neg()));
 	}
 	
 	/**
@@ -84,8 +76,7 @@ public class PinholeCamera {
 	 * @throws InstantiationException 
 	 */
 	public Point getCameraPosition() throws InstantiationException, IllegalAccessException {
-		
-		Point copyOfCameraPosition = Point.class.newInstance();
+		Point copyOfCameraPosition = new Point();
 		
 		copyOfCameraPosition.x = p0.x;
 		copyOfCameraPosition.y = p0.y;

@@ -28,15 +28,13 @@ public class DirectionalLight extends Light {
 		return (DirectionalLight)super.initIntensity(intensity);
 	}
 	
-	//TODO: add some methods
-	
 	/**
 	 * Constructs a ray originated from the given point to the light.
 	 * @param fromPoint - The initial point of the ray
 	 * @return a ray origniated from 'fromPoint' to the light source.
 	 */
 	public Ray rayToLight(Point fromPoint) {
-		throw new UnimplementedMethodException("rayToLight");
+		return new Ray(fromPoint, this.direction.neg());
 	}
 	
 	/**
