@@ -5,36 +5,37 @@
   "renderRefarctions": true,
   "renderReflections": true,
   "camera": {
-    "cameraPosition": {
+    "p0": {
       "x": 0.0,
       "y": 6.0,
       "z": 1.0
     },
-    "centerPoint": {
+    "imageCenter": {
       "x": 0.0,
       "y": 4.059714999709336,
       "z": 0.5149287499273341
     },
-    "towardsVec": {
+    "plainWidth": 0.0,
+    "distanceToPlane": 0.0,
+    "VTowards": {
       "x": 0.0,
       "y": -0.9701425001453319,
       "z": -0.24253562503633297
     },
-    "upVec": {
-      "x": 0.0,
-      "y": -0.24253562503633297,
-      "z": 0.9701425001453319
-    },
-    "rightVec": {
+    "VRight": {
       "x": -1.0,
       "y": -0.0,
       "z": 0.0
     },
-    "viewPlainWidth": 2.0,
-    "distanceToPlain": 2.0,
-    "resX": 200.0,
-    "resY": 200.0,
-    "pixelRatio": 0.0
+    "Vup": {
+      "x": 0.0,
+      "y": -0.24253562503633297,
+      "z": 0.9701425001453319
+    },
+    "pixcelSize": 0.0,
+    "imageRes": 0,
+    "Rx": 0,
+    "Ry": 0
   },
   "ambient": {
     "x": 0.0,

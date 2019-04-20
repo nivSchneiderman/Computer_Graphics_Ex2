@@ -219,6 +219,7 @@ public class Scene {
 	
 	// TODO: implement intersect in Surface class
 	private Hit findIntersection(Ray ray) {
+		
 		Hit minHit = new Hit(Double.MAX_VALUE, new Vec(1,1,1));
 		Hit hit = null;
 		
@@ -229,7 +230,7 @@ public class Scene {
 			}
 		}
 		
-		return hit.t() != Double.MAX_VALUE ? minHit : null;
+		return minHit.t() != Double.MAX_VALUE  ? minHit : null;
 	}
 	
 	// TODO: implement that
