@@ -8,10 +8,12 @@ public class Hit implements Comparable<Hit> {
 	
 	private boolean isWithin = false;
 	private Surface surface = null;
+	private Point hittingPoint;
 	
-	public Hit(double t, Vec normalToSurface) {
+	public Hit(double t, Point hittingPoint, Vec normalToSurface) {
 		this.t = t;
 		this.normalToSurface = normalToSurface;
+		this.hittingPoint = hittingPoint;
 	}
 
 	public Vec getNormalToSurface() {
@@ -20,6 +22,10 @@ public class Hit implements Comparable<Hit> {
 
 	public Surface getSurface() {
 		return surface;
+	}
+	
+	public Point getHittingPoint() {
+		return this.hittingPoint;
 	}
 
 	public void setSurface(Surface surface) {

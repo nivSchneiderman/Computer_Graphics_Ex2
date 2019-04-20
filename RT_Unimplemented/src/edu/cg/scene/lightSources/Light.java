@@ -1,5 +1,7 @@
 package edu.cg.scene.lightSources;
 
+import java.util.List;
+
 import edu.cg.algebra.Point;
 import edu.cg.algebra.Ray;
 import edu.cg.algebra.Vec;
@@ -26,7 +28,7 @@ public abstract class Light {
 	 * @param rayToLight - the ray to the light source
 	 * @return true if the ray is occluded by the surface..
 	 */
-	public abstract boolean isOccludedBy(Surface surface, Ray rayToLight);
+	public abstract boolean isOccludedBy(Surface surface, Ray rayToLight, List<Surface> surfaces);
 	
 	/**
 	 * Returns the light intensity at the specified point.

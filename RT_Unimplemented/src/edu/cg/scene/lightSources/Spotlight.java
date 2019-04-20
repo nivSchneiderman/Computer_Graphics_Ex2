@@ -56,7 +56,8 @@ public class Spotlight extends PointLight {
 	 * @return A vector representing the light intensity (the r,g and b channels). 
 	 */
 	public boolean isOccludedBy(Surface surface, Ray rayToLight) {
-		
+		return false;
+		/*
 		boolean isOccluded = false;
 		
 		double angleToSpotLight =
@@ -79,5 +80,6 @@ public class Spotlight extends PointLight {
 		}
 		
 		return isOccluded; 
+		*/
 	}
 }

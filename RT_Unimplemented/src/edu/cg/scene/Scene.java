@@ -208,7 +208,7 @@ public class Scene {
 		Vec color = surface.Ka().mult(this.ambient);
 		
 		for (Light light : lightSources) {
-			if (true || !light.isOccludedBy(surface, light.rayToLight(ray.source()))){
+			if (true || !light.isOccludedBy(surface, light.rayToLight(ray.source()), this.surfaces)){
 				color.add(surface.Kd().mult(calcDiffuseColor(hitPoint, hit, ray, light)));
 				color.add(surface.Ks().mult(calcSpecularColor(hitPoint, hit, ray, light, surface)));
 			}
@@ -228,17 +228,21 @@ public class Scene {
 		 return color;
 	}
 	public int countHits = 0;
-	// TODO: implement intersect in Surface class
+	
+	
 	public Hit findIntersection(Ray ray) {
-		Hit minHit = new Hit(Double.MAX_VALUE, new Vec(1,1,1));
+		return findIntersection(ray, this.surfaces);
+	}
+	
+	public static Hit findIntersection(Ray ray, List<Surface> surfaces) {
+		Hit minHit = new Hit(Double.MAX_VALUE, new Point(0,0,0),new Vec(1,1,1));
 		Hit hit = null;
 		
-		for (Surface surface : this.surfaces) {
+		for (Surface surface : surfaces) {
 			hit = surface.intersect(ray);
 			if (hit != null && hit.compareTo(minHit) == -1) {
 				minHit = hit;
 				minHit.setSurface(surface);
-				countHits++;
 			}
 		}
 		

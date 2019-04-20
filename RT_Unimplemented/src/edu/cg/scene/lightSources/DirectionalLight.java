@@ -1,7 +1,10 @@
 package edu.cg.scene.lightSources;
 
+import java.util.List;
+
 import edu.cg.UnimplementedMethodException;
 import edu.cg.algebra.Hit;
+import edu.cg.algebra.Ops;
 import edu.cg.algebra.Point;
 import edu.cg.algebra.Ray;
 import edu.cg.algebra.Vec;
@@ -43,7 +46,7 @@ public class DirectionalLight extends Light {
 	 * @param rayToLight - the ray to the light source
 	 * @return true if the ray is occluded by the surface..
 	 */
-	public boolean isOccludedBy(Surface surface, Ray rayToLight) {
+	public boolean isOccludedBy(Surface surface, Ray rayToLight, List<Surface> surfaces) {
 		
 		Hit hit = surface.intersect(rayToLight);
 		return hit != null;
