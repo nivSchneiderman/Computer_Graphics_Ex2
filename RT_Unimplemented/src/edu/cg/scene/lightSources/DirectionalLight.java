@@ -52,13 +52,11 @@ public class DirectionalLight extends Light {
 		
 	}
 	
-	/**
-	 * Returns the light intensity at the specified point.
-	 * @param hittingPoint - The given point
-	 * @param rayToLight - A ray to the light source (this is relevant for point-light and spotlight)
-	 * @return A vector representing the light intensity (the r,g and b channels). 
-	 */
+	@Override
 	public Vec intensity(Point hittingPoint, Ray rayToLight) {
-		throw new UnimplementedMethodException("intensity");
+		Vec directionIntensity = this.direction.normalize().neg();
+		Vec directionToLight = rayToLight(hittingPoint).direction();
+		
+		return Ops.mult(directionIntensity.dot(directionToLight), this.intensity);
 	}
 }
