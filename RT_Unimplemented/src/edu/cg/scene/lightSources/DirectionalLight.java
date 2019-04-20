@@ -1,6 +1,8 @@
 package edu.cg.scene.lightSources;
 
 import edu.cg.UnimplementedMethodException;
+import edu.cg.algebra.Hit;
+import edu.cg.algebra.Ops;
 import edu.cg.algebra.Point;
 import edu.cg.algebra.Ray;
 import edu.cg.algebra.Vec;
@@ -45,16 +47,16 @@ public class DirectionalLight extends Light {
 	 * @return true if the ray is occluded by the surface..
 	 */
 	public boolean isOccludedBy(Surface surface, Ray rayToLight) {
-		throw new UnimplementedMethodException("isOccludedBy");
+		Hit hit = surface.intersect(rayToLight);
+		
+		return hit != null;
 	}
 	
-	/**
-	 * Returns the light intensity at the specified point.
-	 * @param hittingPoint - The given point
-	 * @param rayToLight - A ray to the light source (this is relevant for point-light and spotlight)
-	 * @return A vector representing the light intensity (the r,g and b channels). 
-	 */
+	@Override
 	public Vec intensity(Point hittingPoint, Ray rayToLight) {
-		throw new UnimplementedMethodException("intensity");
+		Vec directionIntensity = this.direction.normalize().neg();
+		Vec directionToLight = rayToLight(hittingPoint).direction();
+		
+		return Ops.mult(directionIntensity.dot(directionToLight), this.intensity);
 	}
 }
