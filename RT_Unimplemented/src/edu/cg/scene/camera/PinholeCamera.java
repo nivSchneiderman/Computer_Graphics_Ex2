@@ -47,8 +47,8 @@ public class PinholeCamera {
 		//correct Vup
 		Vup = (VRight.cross(VTowards)).normalize();
 		
-				
-		
+        System.out.print("done with the camera insance");
+        		
 	}
 	/**
 	 * Initializes the resolution and width of the image.
