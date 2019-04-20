@@ -12,12 +12,14 @@ import java.util.concurrent.Future;
 import edu.cg.Logger;
 import edu.cg.UnimplementedMethodException;
 import edu.cg.algebra.Hit;
+import edu.cg.algebra.Ops;
 import edu.cg.algebra.Point;
 import edu.cg.algebra.Ray;
 import edu.cg.algebra.Vec;
 import edu.cg.scene.camera.PinholeCamera;
 import edu.cg.scene.lightSources.Light;
 import edu.cg.scene.lightSources.PointLight;
+import edu.cg.scene.objects.Material;
 import edu.cg.scene.objects.Surface;
 
 public class Scene {
@@ -127,7 +129,6 @@ public class Scene {
 		//      You can also change the method signature if needed.
 	}
 	
-	
 	public BufferedImage render(int imgWidth, int imgHeight, double viewPlainWidth,Logger logger)
 			throws InterruptedException, ExecutionException {
 		// TODO: Please notice the following comment.
@@ -198,8 +199,8 @@ public class Scene {
 		Vec color = surface.Ka().mult(this.ambient);
 		
 		for (Light light : lightSources) {
-			color.add(surface.Kd().mult(calcDiffuseColor(hitPoint ,hit, ray, light)));
-			color.add(surface.Ks().mult(calcSpecularColor(hit, ray, light)));
+			color.add(surface.Kd().mult(calcDiffuseColor(hitPoint, hit, ray, light)));
+			color.add(surface.Ks().mult(calcSpecularColor(hitPoint, hit, ray, light, surface)));
 		}
 		
 		 recursionLevel++;
@@ -207,10 +208,10 @@ public class Scene {
 			 return color;
 		 
 		 // reflective calculations
-		 Ray rRay = constractReflectiveRayR(ray, hitPoint);
+		 Ray rRay = constractReflectiveRayR(ray, hitPoint, hit);
 		 color.add(calcColor(rRay, recursionLevel).mult(surface.reflectionIntensity()));
-		 // refractive calculations
-		 Ray tRay = constractRefractiveRayT(ray, hitPoint);
+		 // refractive calculations - 
+		 Ray tRay = constractRefractiveRayT(ray, hitPoint, hit, surface);
 		 color.add(calcColor(tRay, recursionLevel).mult(surface.refractionIntensity()));
 		 
 		 return color;
@@ -235,24 +236,30 @@ public class Scene {
 	private Vec calcDiffuseColor(Point hitPoint,Hit hit, Ray ray, Light light) {
 		Ray rayToLight = light.rayToLight(hitPoint);
 		Vec lightIntensity = light.intensity(hitPoint, rayToLight);
-		double nDotL = hit.getNormalToSurface().dot(rayToLight.direction());
+		Vec NormalToSurface = hit.getNormalToSurface();
+		double nDotL = NormalToSurface.dot(rayToLight.direction());
 		Vec diffuseColor = lightIntensity.mult(nDotL);
 		
 		return diffuseColor;
 	}
 	
 	// TODO: implement that
-	private Vec calcSpecularColor(Hit hit, Ray ray, Light light) {
-		throw new UnimplementedMethodException("calcSpecularColor");
+	private Vec calcSpecularColor(Point hitPoint, Hit hit, Ray ray, Light light, Surface surface) {
+		Ray rayToLight = light.rayToLight(hitPoint);
+		Vec lightIntensity = light.intensity(hitPoint, rayToLight);
+		Vec mirrorOfRayToLight = Ops.reflect(rayToLight.direction(), hit.getNormalToSurface()); 
+		Vec vecToViewer = ray.direction().neg();
+		double vDotLBar = vecToViewer.dot(mirrorOfRayToLight);
+		
+		return lightIntensity.mult(Math.pow(vDotLBar, surface.shininess()));
 	}
 	
-	// TODO: implement that
-	private Ray constractReflectiveRayR(Ray ray, Point hit) {
-		throw new UnimplementedMethodException("constractReflectiveRayR");
+	private Ray constractReflectiveRayR(Ray ray, Point hitPoint, Hit hit) {
+		return new Ray(hitPoint, Ops.reflect(ray.direction(), hit.getNormalToSurface()));
 	}
 	
-	// TODO: implement that
-	private Ray constractRefractiveRayT(Ray ray, Point hit) {
-		throw new UnimplementedMethodException("constractReflectiveRayT");
+	// TODO: I assumed that the ray came from the air to the surface - It should be changed
+	private Ray constractRefractiveRayT(Ray ray, Point hitPoint, Hit hit, Surface surface) {
+		return new Ray(hitPoint, Ops.refract(ray.direction(), hit.getNormalToSurface(), 1.0, surface.n1(hit)));
 	}
 }
