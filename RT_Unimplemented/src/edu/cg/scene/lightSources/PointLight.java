@@ -1,6 +1,7 @@
 package edu.cg.scene.lightSources;
 
 import edu.cg.UnimplementedMethodException;
+import edu.cg.algebra.Hit;
 import edu.cg.algebra.Point;
 import edu.cg.algebra.Ray;
 import edu.cg.algebra.Vec;
@@ -61,7 +62,29 @@ public class PointLight extends Light {
 	 * @return true if the ray is occluded by the surface..
 	 */
 	public boolean isOccludedBy(Surface surface, Ray rayToLight) {
-		throw new UnimplementedMethodException("isOccludedBy");
+		
+		boolean isOccluded = false;
+		
+		Hit hit = surface.intersect(rayToLight);
+		
+		if(hit == null){
+			isOccluded = true;
+		}else{
+		   
+		   //get the 3 points 
+		   Point light = rayToLight.source(); 
+		   Point hittingPoint = hit.hittingPoint;
+		   Point objectPoint = findIntersection(rayToLight); 
+		   
+		   //get 2 distances 
+		   double toLight = light.distSqr(hittingPoint);
+		   double toObject = light.distSqr(objectPoint);
+		   
+		   isOccluded = toLight >= toObject;
+		   
+		}
+		
+		return isOccluded; 
 	}
 	
 	/**

@@ -1,10 +1,13 @@
 package edu.cg.scene.lightSources;
 
+import edu.cg.algebra.Hit;
 import edu.cg.algebra.Point;
 import edu.cg.algebra.Ray;
 import edu.cg.algebra.Vec;
+import edu.cg.scene.objects.Surface;
 
 public class Spotlight extends PointLight {
+	
 	private Vec direction;
 	
 	public Spotlight initDirection(Vec direction) {
@@ -35,6 +38,8 @@ public class Spotlight extends PointLight {
 		return (Spotlight)super.initDecayFactors(q, l, c);
 	}
 	
+	
+	@Override
 	/**
 	 * Constructs a ray originated from the given point to the light.
 	 * @param fromPoint - The initial point of the ray
@@ -50,13 +55,29 @@ public class Spotlight extends PointLight {
 	 * @param rayToLight - A ray to the light source
 	 * @return A vector representing the light intensity (the r,g and b channels). 
 	 */
-	public Vec intensity(Point hittingPoint, Ray rayToLight) {
-		Vec v = rayToLight.direction().neg();
-		double d = v.norm();
-		v = v.normalize();
-		double vDotD = v.dot(this.direction);
-		double delimiter = this.kc + this.kl*d + this.kq*Math.pow(d, 2);
+	public boolean isOccludedBy(Surface surface, Ray rayToLight) {
 		
-		return this.intensity.mult(vDotD/delimiter);
+		boolean isOccluded = false;
+		
+		double angleToSpotLight =
+		
+		if(hit == null){
+			isOccluded = true;
+		}else{
+		   
+		   //get the 3 points 
+		   Point light = rayToLight.source(); 
+		   Point hittingPoint = hit.hittingPoint;
+		   Point objectPoint = findIntersection(rayToLight); 
+		   
+		   //get 2 distances 
+		   double toLight = light.distSqr(hittingPoint);
+		   double toObject = light.distSqr(objectPoint);
+		   
+		   isOccluded = toLight >= toObject;
+		   
+		}
+		
+		return isOccluded; 
 	}
 }
