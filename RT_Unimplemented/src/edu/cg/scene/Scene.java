@@ -166,9 +166,6 @@ public class Scene {
 		executor.shutdown();
 		
 		this.logger.log("Ray tracing of " + name + " has been completed.");
-		//TODO: delete that:
-		this.logger.log("background: " + backgroundC);
-		this.logger.log("surfaces: " + surfacesC);
 		
 		executor = null;
 		this.logger = null;
@@ -186,20 +183,16 @@ public class Scene {
 			return color.toColor();
 		});
 	}
-	private int backgroundC = 0;
-	private int surfacesC = 0;
+
 	
 	//TODO: add shadows affect
 	private Vec calcColor(Ray ray, int recursionLevel) {
 		Hit hit = findIntersection(ray);
 
 		if (hit == null) {
-			backgroundC++;
 			return this.backgroundColor;
 		}
 		
-		surfacesC++;
-		Point hitPoint = ray.source().add(ray.direction().mult(hit.t()));
 		Surface surface = hit.getSurface();
 		
 		// Ambient calculation 
@@ -208,8 +201,10 @@ public class Scene {
 		
 		for (Light light : lightSources) {
 			if (true || !light.isOccludedBy(surface, light.rayToLight(ray.source()), this.surfaces)){
-				color.add(surface.Kd().mult(calcDiffuseColor(hit, ray, light)));
-				color.add(surface.Ks().mult(calcSpecularColor(hit, ray, light, surface)));
+				Vec diffuseColorCalculation = surface.Kd().mult(calcDiffuseColor(hit, ray, light));
+				color = color.add(diffuseColorCalculation);
+				Vec specularColorCalculation = surface.Ks().mult(calcSpecularColor(hit, ray, light, surface));
+				color = color.add(specularColorCalculation);
 			}
 		}
 		
@@ -259,11 +254,12 @@ public class Scene {
 	private Vec calcSpecularColor(Hit hit, Ray ray, Light light, Surface surface) {
 		Ray rayToLight = light.rayToLight(hit.getHittingPoint());
 		Vec lightIntensity = light.intensity(hit.getHittingPoint(), rayToLight);
-		Vec mirrorOfRayToLight = Ops.reflect(rayToLight.direction(), hit.getNormalToSurface()); 
-		Vec vecToViewer = ray.direction().neg();
+		Vec mirrorOfRayToLight = Ops.reflect(rayToLight.direction(), hit.getNormalToSurface()).normalize(); 
+		Vec vecToViewer = ray.direction().neg().normalize();
 		double vDotLBar = vecToViewer.dot(mirrorOfRayToLight);
+		Vec specularColor = lightIntensity.mult(Math.pow(vDotLBar, surface.shininess()));
 		
-		return lightIntensity.mult(Math.pow(vDotLBar, surface.shininess()));
+		return specularColor;
 	}
 	
 	private Ray constractReflectiveRayR(Ray ray, Hit hit) {

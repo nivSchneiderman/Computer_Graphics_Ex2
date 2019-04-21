@@ -99,7 +99,8 @@ public class PointLight extends Light {
 		Vec v = rayToLight.direction().neg();
 		double d = v.norm();
 		double delimiter = this.kc + this.kl*d + this.kq*Math.pow(d, 2);
+		Vec intensity = this.intensity.mult(1.0/delimiter);
 		
-		return v.mult(this.intensity).mult(1.0/delimiter);
+		return intensity;
 	}
 }
