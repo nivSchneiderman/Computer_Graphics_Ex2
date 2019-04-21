@@ -169,7 +169,6 @@ public class Scene {
 		//TODO: delete that:
 		this.logger.log("background: " + backgroundC);
 		this.logger.log("surfaces: " + surfacesC);
-		this.logger.log("countHits: " + countHits);
 		
 		executor = null;
 		this.logger = null;
@@ -209,8 +208,8 @@ public class Scene {
 		
 		for (Light light : lightSources) {
 			if (true || !light.isOccludedBy(surface, light.rayToLight(ray.source()), this.surfaces)){
-				color.add(surface.Kd().mult(calcDiffuseColor(hitPoint, hit, ray, light)));
-				color.add(surface.Ks().mult(calcSpecularColor(hitPoint, hit, ray, light, surface)));
+				color.add(surface.Kd().mult(calcDiffuseColor(hit, ray, light)));
+				color.add(surface.Ks().mult(calcSpecularColor(hit, ray, light, surface)));
 			}
 		}
 		
@@ -219,16 +218,14 @@ public class Scene {
 			 return color;
 		 
 		 // reflective calculations
-		 Ray rRay = constractReflectiveRayR(ray, hitPoint, hit);
+		 Ray rRay = constractReflectiveRayR(ray, hit);
 		 color.add(calcColor(rRay, recursionLevel).mult(surface.reflectionIntensity()));
 		 // refractive calculations
-		 Ray tRay = constractRefractiveRayT(ray, hitPoint, hit, surface);
+		 Ray tRay = constractRefractiveRayT(ray, hit, surface);
 		 color.add(calcColor(tRay, recursionLevel).mult(surface.refractionIntensity()));
 		 
 		 return color;
 	}
-	public int countHits = 0;
-	
 	
 	public Hit findIntersection(Ray ray) {
 		return findIntersection(ray, this.surfaces);
@@ -249,9 +246,9 @@ public class Scene {
 		return minHit.t() == Double.MAX_VALUE ? null : minHit;
 	}
 	
-	private Vec calcDiffuseColor(Point hitPoint,Hit hit, Ray ray, Light light) {
-		Ray rayToLight = light.rayToLight(hitPoint);
-		Vec lightIntensity = light.intensity(hitPoint, rayToLight);
+	private Vec calcDiffuseColor(Hit hit, Ray ray, Light light) {
+		Ray rayToLight = light.rayToLight(hit.getHittingPoint());
+		Vec lightIntensity = light.intensity(hit.getHittingPoint(), rayToLight);
 		Vec NormalToSurface = hit.getNormalToSurface();
 		double nDotL = NormalToSurface.dot(rayToLight.direction());
 		Vec diffuseColor = lightIntensity.mult(nDotL);
@@ -259,9 +256,9 @@ public class Scene {
 		return diffuseColor;
 	}
 	
-	private Vec calcSpecularColor(Point hitPoint, Hit hit, Ray ray, Light light, Surface surface) {
-		Ray rayToLight = light.rayToLight(hitPoint);
-		Vec lightIntensity = light.intensity(hitPoint, rayToLight);
+	private Vec calcSpecularColor(Hit hit, Ray ray, Light light, Surface surface) {
+		Ray rayToLight = light.rayToLight(hit.getHittingPoint());
+		Vec lightIntensity = light.intensity(hit.getHittingPoint(), rayToLight);
 		Vec mirrorOfRayToLight = Ops.reflect(rayToLight.direction(), hit.getNormalToSurface()); 
 		Vec vecToViewer = ray.direction().neg();
 		double vDotLBar = vecToViewer.dot(mirrorOfRayToLight);
@@ -269,12 +266,12 @@ public class Scene {
 		return lightIntensity.mult(Math.pow(vDotLBar, surface.shininess()));
 	}
 	
-	private Ray constractReflectiveRayR(Ray ray, Point hitPoint, Hit hit) {
-		return new Ray(hitPoint, Ops.reflect(ray.direction(), hit.getNormalToSurface()));
+	private Ray constractReflectiveRayR(Ray ray, Hit hit) {
+		return new Ray(hit.getHittingPoint(), Ops.reflect(ray.direction(), hit.getNormalToSurface()));
 	}
 	
 	// TODO: I assumed that the ray came from the air to the surface - It should be changed
-	private Ray constractRefractiveRayT(Ray ray, Point hitPoint, Hit hit, Surface surface) {
-		return new Ray(hitPoint, Ops.refract(ray.direction(), hit.getNormalToSurface(), 1.0, surface.n1(hit)));
+	private Ray constractRefractiveRayT(Ray ray, Hit hit, Surface surface) {
+		return new Ray(hit.getHittingPoint(), Ops.refract(ray.direction(), hit.getNormalToSurface(), 1.0, surface.n1(hit)));
 	}
 }
