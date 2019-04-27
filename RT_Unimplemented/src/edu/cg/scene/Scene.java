@@ -200,7 +200,7 @@ public class Scene {
 		Vec color = surface.Ka().mult(this.ambient);
 		
 		for (Light light : lightSources) {
-			if (!lightIsOccludedBySomeSurface(light, light.rayToLight(hit.getHittingPoint()), this.surfaces)){
+			if (!lightIsOccludedBySomeSurface(light, light.rayToLight(hit.getHittingPoint()))){
 				Vec diffuseColorCalculation = calcDiffuseColor(hit, ray, light);
 				color = color.add(diffuseColorCalculation);
 				Vec specularColorCalculation = calcSpecularColor(hit, ray, light);
@@ -242,9 +242,9 @@ public class Scene {
 		return minHit.t() == Double.MAX_VALUE ? null : minHit;
 	}
 	
-	private boolean lightIsOccludedBySomeSurface(Light light, Ray rayToLight, List<Surface> surfaces)
+	private boolean lightIsOccludedBySomeSurface(Light light, Ray rayToLight)
 	{	
-		for (Surface surface : surfaces)
+		for (Surface surface : this.surfaces)
 		{
 			if (light.isOccludedBy(surface, rayToLight))
 			{
@@ -276,7 +276,7 @@ public class Scene {
 		if (vDotRBar > 0)
 		{
 			specularColor = lightIntensity.mult(Math.pow(vDotRBar, hit.getSurface().shininess())).mult(hit.getSurface().Ks());
-		}	
+		}
 		
 		return specularColor;
 	}

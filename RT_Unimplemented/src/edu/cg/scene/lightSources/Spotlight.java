@@ -38,17 +38,6 @@ public class Spotlight extends PointLight {
 		return (Spotlight)super.initDecayFactors(q, l, c);
 	}
 	
-	
-	@Override
-	/**
-	 * Constructs a ray originated from the given point to the light.
-	 * @param fromPoint - The initial point of the ray
-	 * @return a ray origniated from 'fromPoint' to the light source.
-	 */
-	public Ray rayToLight(Point fromPoint) {
-		return new Ray(fromPoint, this.position.sub(fromPoint));
-	}
-	
 	@Override
 	/**
 	 * Returns the light intensity at the specified point.
@@ -57,9 +46,16 @@ public class Spotlight extends PointLight {
 	 * @return A vector representing the light intensity (the r,g and b channels). 
 	 */
 	public Vec intensity(Point hittingPoint, Ray rayToLight) {
+		/* New:
+		double d = hittingPoint.dist(this.position);
+		double delimiter = this.kc + this.kl*d + this.kq*d*d;
+		Vec intensity = this.intensity.mult(1.0/delimiter);
+		
+		return intensity;
+		*/
 		Vec v = rayToLight.direction().neg();
 		double d = v.norm();
-		double delimiter = this.kc + this.kl*d + this.kq*Math.pow(d, 2);
+		double delimiter = this.kc + this.kl*d + this.kq*d*d;
 		double vBarDotDBar = v.normalize().dot(this.direction.normalize());
 		Vec intensity = this.intensity.mult(vBarDotDBar/delimiter);
 		
