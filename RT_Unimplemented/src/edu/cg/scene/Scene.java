@@ -201,13 +201,13 @@ public class Scene {
 		
 		for (Light light : lightSources) {
 			if (!lightIsOccludedBySomeSurface(light, light.rayToLight(hit.getHittingPoint()), this.surfaces)){
-				Vec diffuseColorCalculation = surface.Kd().mult(calcDiffuseColor(hit, ray, light));
+				Vec diffuseColorCalculation = calcDiffuseColor(hit, ray, light);
 				color = color.add(diffuseColorCalculation);
-				Vec specularColorCalculation = surface.Ks().mult(calcSpecularColor(hit, ray, light, surface));
+				Vec specularColorCalculation = calcSpecularColor(hit, ray, light);
 				color = color.add(specularColorCalculation);
 			}
 		}
-		
+
 		 recursionLevel++;
 		 if (recursionLevel >= maxRecursionLevel)
 			 return color;
@@ -262,16 +262,21 @@ public class Scene {
 		double nDotL = NormalToSurface.dot(rayToLight.direction());
 		Vec diffuseColor = lightIntensity.mult(nDotL);
 		
-		return diffuseColor;
+		return diffuseColor.mult(hit.getSurface().Kd());
 	}
 	
-	private Vec calcSpecularColor(Hit hit, Ray ray, Light light, Surface surface) {
+	private Vec calcSpecularColor(Hit hit, Ray ray, Light light) {
+		Vec specularColor = new Vec(0,0,0);
 		Ray rayToLight = light.rayToLight(hit.getHittingPoint());
 		Vec lightIntensity = light.intensity(hit.getHittingPoint(), rayToLight);
 		Vec mirrorOfRayToLight = Ops.reflect(rayToLight.direction(), hit.getNormalToSurface()).normalize(); 
 		Vec vecToViewer = ray.direction().neg().normalize();
-		double vDotLBar = vecToViewer.dot(mirrorOfRayToLight);
-		Vec specularColor = lightIntensity.mult(Math.pow(vDotLBar, surface.shininess()));
+		double vDotRBar = vecToViewer.dot(mirrorOfRayToLight.normalize());
+		
+		if (vDotRBar > 0)
+		{
+			specularColor = lightIntensity.mult(Math.pow(vDotRBar, hit.getSurface().shininess())).mult(hit.getSurface().Ks());
+		}	
 		
 		return specularColor;
 	}

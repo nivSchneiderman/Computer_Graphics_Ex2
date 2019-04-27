@@ -76,7 +76,7 @@
             "y": 1.0,
             "z": 1.0
           },
-          "name": "Box 125"
+          "name": "Box 1"
         }
       },
       "material": {
@@ -116,7 +116,7 @@
             "y": 0.0,
             "z": 1.0
           },
-          "name": "Box 126"
+          "name": "Box 2"
         }
       },
       "material": {
@@ -156,7 +156,7 @@
             "y": 0.0,
             "z": 1.0
           },
-          "name": "Box 127"
+          "name": "Box 3"
         }
       },
       "material": {
