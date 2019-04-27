@@ -46,11 +46,8 @@ public class DirectionalLight extends Light {
 	 * @param rayToLight - the ray to the light source
 	 * @return true if the ray is occluded by the surface..
 	 */
-	public boolean isOccludedBy(Surface surface, Ray rayToLight, List<Surface> surfaces) {
-		
-		Hit hit = surface.intersect(rayToLight);
-		return hit != null;
-		
+	public boolean isOccludedBy(Surface surface, Ray rayToLight) {
+	    return surface.intersect(rayToLight) != null;
 	}
 	
 	@Override

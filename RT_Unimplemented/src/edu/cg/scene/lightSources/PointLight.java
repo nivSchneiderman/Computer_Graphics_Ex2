@@ -64,7 +64,7 @@ public class PointLight extends Light {
 	 * @param rayToLight - the ray to the light source
 	 * @return true if the ray is occluded by the surface..
 	 */
-	public boolean isOccludedBy(Surface surface, Ray rayToLight, List<Surface> surfaces) {
+	public boolean isOccludedByOld(Surface surface, Ray rayToLight, List<Surface> surfaces) {
 		
 		boolean isOccluded = false;
 		
@@ -87,6 +87,28 @@ public class PointLight extends Light {
 		}
 		
 		return isOccluded; 
+	}
+	
+	/**
+	 * Checks if the given surface occludes the light-source. The surface occludes the light source
+	 * if the given ray first intersects the surface before reaching the light source.
+	 * @param surface -The given surface
+	 * @param rayToLight - the ray to the light source
+	 * @return true if the ray is occluded by the surface..
+	 */
+	public boolean isOccludedBy(Surface surface, Ray rayToLight) {
+		Hit hitSurface = surface.intersect(rayToLight);
+		
+		if (hitSurface != null)
+		{
+		   //get 2 distances 
+		   double lightToRaySource = rayToLight.source().distSqr(rayToLight.source());
+		   double lightToSurface = rayToLight.source().distSqr(hitSurface.getHittingPoint());
+		   
+		   return lightToRaySource >= lightToSurface;
+		}
+		
+		return false; 
 	}
 	
 	/**

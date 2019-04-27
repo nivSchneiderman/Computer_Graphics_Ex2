@@ -136,8 +136,5 @@
         "refractionIndex": 1.5
       }
     }
-  ],
-  "backgroundC": 0,
-  "surfacesC": 0,
-  "countHits": 0
+  ]
 }

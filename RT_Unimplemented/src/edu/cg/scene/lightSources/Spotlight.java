@@ -73,30 +73,12 @@ public class Spotlight extends PointLight {
 	 * @return A vector representing the light intensity (the r,g and b channels). 
 	 */
 	public boolean isOccludedBy(Surface surface, Ray rayToLight) {
-		return false;
-		/*
-		boolean isOccluded = false;
+		double epsilon = 1.0E-5;
 		
-		double angleToSpotLight =
-		
-		if(hit == null){
-			isOccluded = true;
-		}else{
-		   
-		   //get the 3 points 
-		   Point light = rayToLight.source(); 
-		   Point hittingPoint = hit.hittingPoint;
-		   Point objectPoint = findIntersection(rayToLight); 
-		   
-		   //get 2 distances 
-		   double toLight = light.distSqr(hittingPoint);
-		   double toObject = light.distSqr(objectPoint);
-		   
-		   isOccluded = toLight >= toObject;
-		   
-		}
-		
-		return isOccluded; 
-		*/
+		if (rayToLight.direction().neg().dot(direction.normalize()) < epsilon) {
+	        return true;
+	      }
+	     
+		return super.isOccludedBy(surface, rayToLight);
 	}
 }

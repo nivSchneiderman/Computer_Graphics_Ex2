@@ -200,7 +200,7 @@ public class Scene {
 		Vec color = surface.Ka().mult(this.ambient);
 		
 		for (Light light : lightSources) {
-			if (true || !light.isOccludedBy(surface, light.rayToLight(ray.source()), this.surfaces)){
+			if (!lightIsOccludedBySomeSurface(light, light.rayToLight(hit.getHittingPoint()), this.surfaces)){
 				Vec diffuseColorCalculation = surface.Kd().mult(calcDiffuseColor(hit, ray, light));
 				color = color.add(diffuseColorCalculation);
 				Vec specularColorCalculation = surface.Ks().mult(calcSpecularColor(hit, ray, light, surface));
@@ -215,10 +215,11 @@ public class Scene {
 		 // reflective calculations
 		 Ray rRay = constractReflectiveRayR(ray, hit);
 		 color.add(calcColor(rRay, recursionLevel).mult(surface.reflectionIntensity()));
+		 
 		 // refractive calculations
 		 Ray tRay = constractRefractiveRayT(ray, hit, surface);
 		 color.add(calcColor(tRay, recursionLevel).mult(surface.refractionIntensity()));
-		 
+		 		 
 		 return color;
 	}
 	
@@ -239,6 +240,19 @@ public class Scene {
 		}
 		
 		return minHit.t() == Double.MAX_VALUE ? null : minHit;
+	}
+	
+	private boolean lightIsOccludedBySomeSurface(Light light, Ray rayToLight, List<Surface> surfaces)
+	{	
+		for (Surface surface : surfaces)
+		{
+			if (light.isOccludedBy(surface, rayToLight))
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	private Vec calcDiffuseColor(Hit hit, Ray ray, Light light) {
@@ -266,8 +280,8 @@ public class Scene {
 		return new Ray(hit.getHittingPoint(), Ops.reflect(ray.direction(), hit.getNormalToSurface()));
 	}
 	
-	// TODO: I assumed that the ray came from the air to the surface - It should be changed
 	private Ray constractRefractiveRayT(Ray ray, Hit hit, Surface surface) {
-		return new Ray(hit.getHittingPoint(), Ops.refract(ray.direction(), hit.getNormalToSurface(), 1.0, surface.n1(hit)));
+		
+		return new Ray(hit.getHittingPoint(), Ops.refract(ray.direction(), hit.getNormalToSurface(), surface.n1(hit), surface.n2(hit)));
 	}
 }

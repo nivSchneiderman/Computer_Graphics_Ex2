@@ -28,7 +28,7 @@ public abstract class Light {
 	 * @param rayToLight - the ray to the light source
 	 * @return true if the ray is occluded by the surface..
 	 */
-	public abstract boolean isOccludedBy(Surface surface, Ray rayToLight, List<Surface> surfaces);
+	public abstract boolean isOccludedBy(Surface surface, Ray rayToLight);
 	
 	/**
 	 * Returns the light intensity at the specified point.
