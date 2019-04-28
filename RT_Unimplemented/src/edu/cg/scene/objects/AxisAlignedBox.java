@@ -109,13 +109,36 @@ public class AxisAlignedBox extends Shape {
 	      minT = tFar;
 	    }
 	    
-	    Vec norm = ray.add(minT).toVec().normalize();
+	    Vec norm = normal(ray.add(minT));
 	    
 	    if (isWithin) {
 	      norm = norm.neg();
 	    }
 	    
 	    return new Hit(minT, ray.add(minT), norm).setIsWithin(isWithin);
+	}
+	
+	private Vec normal(Point point) {
+	    if (Math.abs(point.z - minPoint.z) <= 1.0E-5) {
+	      return new Vec(0.0, 0.0, -1.0);
+	    }
+	    if (Math.abs(point.z - maxPoint.z) <= 1.0E-5) {
+	      return new Vec(0.0, 0.0, 1.0);
+	    }
+	    if (Math.abs(point.y - minPoint.y) <= 1.0E-5) {
+	      return new Vec(0.0D, -1.0D, 0.0D);
+	    }
+	    if (Math.abs(point.y - maxPoint.y) <= 1.0E-5) {
+	      return new Vec(0.0, 1.0, 0.0);
+	    }
+	    if (Math.abs(point.x - minPoint.x) <= 1.0E-5) {
+	      return new Vec(-1.0, 0.0, 0.0);
+	    }
+	    if (Math.abs(point.x - maxPoint.x) <= 1.0E-5) {
+	      return new Vec(1.0, 0.0, 0.0);
+	    }
+	    
+	    return null;
 	}
 	
 	  private static double findIntersectionParameter(double a, double b, double c) 

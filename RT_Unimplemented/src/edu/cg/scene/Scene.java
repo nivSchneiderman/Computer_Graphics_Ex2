@@ -271,9 +271,9 @@ public class Scene {
 		Vec specularColor = new Vec(0,0,0);
 		Ray rayToLight = light.rayToLight(hit.getHittingPoint());
 		Vec lightIntensity = light.intensity(hit.getHittingPoint(), rayToLight);
-		Vec mirrorOfRayToLight = Ops.reflect(rayToLight.direction().neg(), hit.getNormalToSurface()).normalize(); 
+		Vec mirrorOfRayToLight = Ops.reflect(rayToLight.direction().neg(), hit.getNormalToSurface()); 
 		Vec vecToViewer = ray.direction().neg().normalize();
-		double vDotRBar = vecToViewer.dot(mirrorOfRayToLight.normalize());
+		double vDotRBar = vecToViewer.dot(mirrorOfRayToLight);
 		
 		if (vDotRBar > 0)
 		{
