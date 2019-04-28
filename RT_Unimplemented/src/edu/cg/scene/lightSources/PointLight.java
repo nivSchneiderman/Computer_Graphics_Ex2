@@ -54,7 +54,7 @@ public class PointLight extends Light {
 	 * @return a ray origniated from 'fromPoint' to the light source.
 	 */
 	public Ray rayToLight(Point fromPoint) {
-		return new Ray(fromPoint, this.position.sub(fromPoint));
+		return new Ray(fromPoint, this.position);
 	}
 	
 	/**
@@ -86,9 +86,9 @@ public class PointLight extends Light {
 	 * @return A vector representing the light intensity (the r,g and b channels). 
 	 */
 	public Vec intensity(Point hittingPoint, Ray rayToLight) {
-		Vec v = rayToLight.direction().neg();
-		double d = v.norm();
-		double delimiter = this.kc + this.kl*d + this.kq*Math.pow(d, 2);
+		
+		double d = hittingPoint.dist(position);
+		double delimiter = this.kc + (this.kl + d * this.kq ) * d;
 		Vec intensity = this.intensity.mult(1.0/delimiter);
 		
 		return intensity;
