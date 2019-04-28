@@ -86,9 +86,9 @@ public class PointLight extends Light {
 	 * @return A vector representing the light intensity (the r,g and b channels). 
 	 */
 	public Vec intensity(Point hittingPoint, Ray rayToLight) {
-		Vec v = rayToLight.direction().neg();
+		Vec v = hittingPoint.sub(this.position);
 		double d = v.norm();
-		double delimiter = this.kc + this.kl*d + this.kq*Math.pow(d, 2);
+		double delimiter = this.kc + this.kl*d + this.kq*d*d;
 		Vec intensity = this.intensity.mult(1.0/delimiter);
 		
 		return intensity;
