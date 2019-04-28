@@ -201,7 +201,7 @@ public class Scene {
 		
 		for (Light light : lightSources) {
 			if (!lightIsOccludedBySomeSurface(light, light.rayToLight(hit.getHittingPoint()))){
-				Vec diffuseColorCalculation = calcDiffuseColor(hit, ray, light);
+				Vec diffuseColorCalculation = calcDiffuseColor(hit, light);
 				color = color.add(diffuseColorCalculation);
 				Vec specularColorCalculation = calcSpecularColor(hit, ray, light);
 				color = color.add(specularColorCalculation);
@@ -228,18 +228,20 @@ public class Scene {
 	}
 	
 	public static Hit findIntersection(Ray ray, List<Surface> surfaces) {
-		Hit minHit = new Hit(Double.MAX_VALUE, new Point(0,0,0),new Vec(1,1,1));
 		Hit hit = null;
+		Hit minHit = null;
 		
-		for (Surface surface : surfaces) {
+		for (int i = 0; i < surfaces.size(); i++) {
+			Surface surface = surfaces.get(i);
 			hit = surface.intersect(ray);
-			if (hit != null && hit.compareTo(minHit) == -1) {
+			
+			if (hit != null && (minHit == null || hit.compareTo(minHit) == -1)) {
 				minHit = hit;
 				minHit.setSurface(surface);
 			}
 		}
 		
-		return minHit.t() == Double.MAX_VALUE ? null : minHit;
+		return minHit;
 	}
 	
 	private boolean lightIsOccludedBySomeSurface(Light light, Ray rayToLight)
@@ -255,7 +257,7 @@ public class Scene {
 		return false;
 	}
 	
-	private Vec calcDiffuseColor(Hit hit, Ray ray, Light light) {
+	private Vec calcDiffuseColor(Hit hit, Light light) {
 		Ray rayToLight = light.rayToLight(hit.getHittingPoint());
 		Vec lightIntensity = light.intensity(hit.getHittingPoint(), rayToLight);
 		Vec NormalToSurface = hit.getNormalToSurface();
@@ -269,7 +271,7 @@ public class Scene {
 		Vec specularColor = new Vec(0,0,0);
 		Ray rayToLight = light.rayToLight(hit.getHittingPoint());
 		Vec lightIntensity = light.intensity(hit.getHittingPoint(), rayToLight);
-		Vec mirrorOfRayToLight = Ops.reflect(rayToLight.direction(), hit.getNormalToSurface()).normalize(); 
+		Vec mirrorOfRayToLight = Ops.reflect(rayToLight.direction().neg(), hit.getNormalToSurface()).normalize(); 
 		Vec vecToViewer = ray.direction().neg().normalize();
 		double vDotRBar = vecToViewer.dot(mirrorOfRayToLight.normalize());
 		

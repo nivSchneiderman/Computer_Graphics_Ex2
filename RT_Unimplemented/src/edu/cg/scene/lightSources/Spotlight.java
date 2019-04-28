@@ -63,10 +63,11 @@ public class Spotlight extends PointLight {
 	}
 	
 	/**
-	 * Returns the light intensity at the specified point.
-	 * @param hittingPoint - The given point
-	 * @param rayToLight - A ray to the light source
-	 * @return A vector representing the light intensity (the r,g and b channels). 
+	 * Checks if the given surface occludes the light-source. The surface occludes the light source
+	 * if the given ray first intersects the surface before reaching the light source.
+	 * @param surface -The given surface
+	 * @param rayToLight - the ray to the light source
+	 * @return true if the ray is occluded by the surface..
 	 */
 	public boolean isOccludedBy(Surface surface, Ray rayToLight) {
 		double epsilon = 1.0E-5;
