@@ -210,16 +210,24 @@ public class Scene {
 
 		 recursionLevel++;
 		 if (recursionLevel >= maxRecursionLevel)
-			 return color;
+			return color;
 		 
 		 // reflective calculations
-		 Ray rRay = constractReflectiveRayR(ray, hit);
-		 color.add(calcColor(rRay, recursionLevel).mult(surface.reflectionIntensity()));
+		 if (renderReflections)
+		 {
+			Ray rRay = constractReflectiveRayR(ray, hit);
+			double reflectionWeight = surface.reflectionIntensity();
+			color.add(calcColor(rRay, recursionLevel).mult(reflectionWeight));
+		 }
 		 
 		 // refractive calculations
-		 Ray tRay = constractRefractiveRayT(ray, hit, surface);
-		 color.add(calcColor(tRay, recursionLevel).mult(surface.refractionIntensity()));
-		 		 
+		 if (renderRefarctions && hit.getSurface().isTransparent())
+		 {
+			Ray tRay = constractRefractiveRayT(ray, hit, surface);
+			Vec refractionColor = this.calcColor(tRay, recursionLevel).mult(surface.refractionIntensity());
+			color = color.add(refractionColor); // Add the color created by the refraction rays
+		 }
+	 
 		 return color;
 	}
 	
