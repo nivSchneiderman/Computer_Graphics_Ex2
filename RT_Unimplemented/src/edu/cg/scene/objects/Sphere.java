@@ -53,13 +53,13 @@ public class Sphere extends Shape {
 	    }
 	    
 	    double minT = t1;
-	    Vec normal = ray.add(t1).toVec().normalize();
+	    Vec normal = ray.add(t1).sub(center).normalize();
 	    boolean isWithin = false;
 	    
 	    if (t1 < 1.0E-5) 
 	    {
 	      minT = t2;
-	      normal = ray.add(t2).toVec().normalize().neg();
+	      normal = ray.add(t2).sub(center).normalize().neg();
 	      isWithin = true;
 	    }
 	    
