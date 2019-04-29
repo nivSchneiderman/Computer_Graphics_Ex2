@@ -209,27 +209,32 @@ public class Scene {
 		}
 
 		 recursionLevel++;
-		 if (recursionLevel >= maxRecursionLevel)
-			return color;
-		 
-		 // reflective calculations
-		 if (renderReflections)
-		 {
-			Ray rRay = constractReflectiveRayR(ray, hit);
-			double reflectionWeight = surface.reflectionIntensity();
-			color.add(calcColor(rRay, recursionLevel).mult(reflectionWeight));
+		 if (recursionLevel > maxRecursionLevel){
+			 return color;
 		 }
+		 
+		   // reflective calculations
+		   if(renderReflections){
+				Ray rRay = constractReflectiveRayR(ray, hit);
+				color = color.add(calcColor(rRay, recursionLevel).mult(surface.reflectionIntensity()));
+			}
 		 
 		 // refractive calculations
-		 if (renderRefarctions && hit.getSurface().isTransparent())
-		 {
-			Ray tRay = constractRefractiveRayT(ray, hit, surface);
-			Vec refractionColor = this.calcColor(tRay, recursionLevel).mult(surface.refractionIntensity());
-			color = color.add(refractionColor); // Add the color created by the refraction rays
+		 if(renderRefarctions){
+		 Ray tRay = constractRefractiveRayT(ray, hit, surface);
+		 color = color.add(calcColor(tRay, recursionLevel).mult(surface.refractionIntensity()));
 		 }
-	 
+		 
 		 return color;
 	}
+	
+	private Ray constractReflectiveRayR(Ray ray, Hit hit) {
+		return new Ray(hit.getHittingPoint(), Ops.reflect(ray.direction(), hit.getNormalToSurface()));
+	}
+	
+	private Ray constractRefractiveRayT(Ray ray, Hit hit, Surface surface) {
+		return new Ray(hit.getHittingPoint(), Ops.refract(ray.direction(), hit.getNormalToSurface(), surface.n1(hit), surface.n2(hit)));
+    }
 	
 	public Hit findIntersection(Ray ray) {
 		return findIntersection(ray, this.surfaces);
@@ -291,12 +296,6 @@ public class Scene {
 		return specularColor;
 	}
 	
-	private Ray constractReflectiveRayR(Ray ray, Hit hit) {
-		return new Ray(hit.getHittingPoint(), Ops.reflect(ray.direction(), hit.getNormalToSurface()));
-	}
-	
-	private Ray constractRefractiveRayT(Ray ray, Hit hit, Surface surface) {
 		
-		return new Ray(hit.getHittingPoint(), Ops.refract(ray.direction(), hit.getNormalToSurface(), surface.n1(hit), surface.n2(hit)));
-	}
+	
 }
