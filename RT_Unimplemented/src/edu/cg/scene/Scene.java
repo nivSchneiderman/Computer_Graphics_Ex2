@@ -229,13 +229,13 @@ public class Scene {
 	}
 	
 	private Ray constractReflectiveRayR(Ray ray, Hit hit) {
-		return new Ray(hit.getHittingPoint().add(ray.direction().mult(0.001)), Ops.reflect(ray.direction(), hit.getNormalToSurface()));
+		return new Ray(hit.getHittingPoint().add(ray.direction().mult(0.0000000001)), Ops.reflect(ray.direction(), hit.getNormalToSurface()));
 	}
-	
+	//
 	private Ray constractRefractiveRayT(Ray ray, Hit hit, Surface surface) {
-		return new Ray(hit.getHittingPoint().add(ray.direction().mult(0.001)), Ops.refract(ray.direction(), hit.getNormalToSurface(), surface.n1(hit), surface.n2(hit)));
+		return new Ray(hit.getHittingPoint().add(ray.direction().mult(0.000000001)), Ops.refract(ray.direction(), hit.getNormalToSurface(), surface.n1(hit), surface.n2(hit)));
     }
-	
+	//
 	public Hit findIntersection(Ray ray) {
 		return findIntersection(ray, this.surfaces);
 	}
