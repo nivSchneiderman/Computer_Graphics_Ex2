@@ -64,95 +64,88 @@ public class AxisAlignedBox extends Shape {
 	@Override
 	public Hit intersect(Ray ray) 
 	{
-		double tNear = -1.0E8;
-		double tFar = 1.0E8;
-	    double[] rayP = ray.source().asArray();
-	    double[] rayD = ray.direction().asArray();
-	    double[] minP = minPoint.asArray();
-	    double[] maxP = maxPoint.asArray();
+		double closeP = -0.000000001;
+		double farP = 10000000000.0;
+	    		
+		//take the points as arrays 
+		double[] ray_P = ray.source().asArray();
+	    double[] ray_D = ray.direction().asArray();
+	    double[] min = minPoint.asArray();
+	    double[] max = maxPoint.asArray();
 	    
 	    for (int i = 0; i < 3; i++) {
-	      if (Math.abs(rayD[i]) <= 1.0E-5) {
-	        if ((rayP[i] < minP[i]) || (rayP[i] > maxP[i])) {
-	          return null;
-	        }
-	      } 
-	      else {
-	        double t1 = findIntersectionParameter(rayD[i], rayP[i], minP[i]);
-	        double t2 = findIntersectionParameter(rayD[i], rayP[i], maxP[i]);
+	      if (Math.abs(ray_D[i]) < 0.000000001) {
+	        if ((ray_P[i] > max[i]) || (ray_P[i] < min[i])) return null;
+	      }else{
 	        
-	        if (t1 > t2) {
-	          double tmp = t1;
-	          t1 = t2;
-	          t2 = tmp;
+	    	double p1 = findIntersectionParameter(ray_D[i], ray_P[i], min[i]);
+	        double p2 = findIntersectionParameter(ray_D[i], ray_P[i], max[i]);
+	        
+	         if (p1 > p2) {
+	          double tmp = p1;
+	          p1 = p2;
+	          p2 = tmp;
 	        }
 	        
-	        if ((Double.isNaN(t1)) || (Double.isNaN(t2))) {
-	          return null;
-	        }
-	        if (t1 > tNear) {
-	          tNear = t1;
-	        }
-	        if (t2 < tFar) {
-	          tFar = t2;
-	        }
-	        if ((tNear > tFar) || (tFar < 1.0E-5))
-	          return null;
+	         //edge case of 1 t 
+	        if ((Double.isNaN(p1)) || (Double.isNaN(p2))) return null;
+	        
+	        if(p1 > closeP) closeP = p1;
+	        if(p2 < farP)  farP = p2;
+	        if((closeP > farP) || (farP < 0.000001))  return null;
 	      }
 	    }
 	    
-	    double minT = tNear;
+	    double minP = closeP;
 	    boolean isWithin = false;
 	    
-	    if (minT < 1.0E-5) {
+	    if (minP < 0.000001) { 
 	      isWithin = true;
-	      minT = tFar;
+	      minP = farP;
 	    }
 	    
-	    Vec norm = normal(ray.add(minT));
+	    Vec norm = normal(ray.add(minP));
 	    
 	    if (isWithin) {
 	      norm = norm.neg();
 	    }
 	    
-	    return new Hit(minT, ray.add(minT), norm).setIsWithin(isWithin);
+	    return new Hit(minP, ray.add(minP), norm).setIsWithin(isWithin);
 	}
 	
 	private Vec normal(Point point) {
-	    if (Math.abs(point.z - minPoint.z) <= 1.0E-5) {
+	    if (Math.abs(point.z - minPoint.z) <= 0.00001) {
 	      return new Vec(0.0, 0.0, -1.0);
 	    }
-	    if (Math.abs(point.z - maxPoint.z) <= 1.0E-5) {
+	    if (Math.abs(point.z - maxPoint.z) <= 0.00001) {
 	      return new Vec(0.0, 0.0, 1.0);
 	    }
-	    if (Math.abs(point.y - minPoint.y) <= 1.0E-5) {
+	    if (Math.abs(point.y - minPoint.y) <= 0.00001) {
 	      return new Vec(0.0D, -1.0D, 0.0D);
 	    }
-	    if (Math.abs(point.y - maxPoint.y) <= 1.0E-5) {
+	    if (Math.abs(point.y - maxPoint.y) <= 0.00001) {
 	      return new Vec(0.0, 1.0, 0.0);
 	    }
-	    if (Math.abs(point.x - minPoint.x) <= 1.0E-5) {
+	    if (Math.abs(point.x - minPoint.x) <= 0.00001) {
 	      return new Vec(-1.0, 0.0, 0.0);
 	    }
-	    if (Math.abs(point.x - maxPoint.x) <= 1.0E-5) {
+	    if (Math.abs(point.x - maxPoint.x) <= 0.00001) {
 	      return new Vec(1.0, 0.0, 0.0);
 	    }
 	    
 	    return null;
 	}
 	
-	  private static double findIntersectionParameter(double a, double b, double c) 
+	  private static double findIntersectionParameter(double x, double y, double z) 
 	  {
-		double result = (c - b) / a;
+		double result = (z - y) / x;
 		  
-	    if ((Math.abs(a) < 1.0E-5) && (Math.abs(b - c) > 1.0E-5)) {
-	    	result = 1.0E8;
+	    if ((Math.abs(x) < 0.000001) && (Math.abs(y - z) > 0.00001)) {
+	    	result = 10000000;
 	    }
-	    if ((Math.abs(a) < 1.0E-5) && (Math.abs(b - c) < 1.0E-5))
+	    if ((Math.abs(x) < 0.00001) && (Math.abs(y - z) < 0.00001))
 	    	result = 0.0;
 	    
 	    return result;
 	  }
-
-	
 }

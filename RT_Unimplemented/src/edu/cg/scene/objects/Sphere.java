@@ -39,40 +39,33 @@ public class Sphere extends Shape {
 	public Hit intersect(Ray ray) {
 		double b = ray.direction().mult(2.0).dot(ray.source().sub(center));
 	    double c = substituteFromCenter(ray.source());
-	    double discriminant = Math.sqrt(b * b - 4.0 * c);
+	    double disc = Math.sqrt(b * b - 4.0 * c);//using discriminanta calc 
 	    
-	    if (Double.isNaN(discriminant)) {
-	      return null;
-	    }
+	    //edge case of no intersection
+	    if (Double.isNaN(disc)) return null;
+	    	    
+	    double p1 = (-b - disc) / 2.0;
+	    double p2 = (-b + disc) / 2.0;
 	    
-	    double t1 = (-b - discriminant) / 2.0;
-	    double t2 = (-b + discriminant) / 2.0;
+	    if (p2 < 0.000001) return null;
+	    	    
+	    double min = p1;
+	    Vec normal = ray.add(p1).sub(center).normalize();
+	    boolean sourceIsInside = false;
 	    
-	    if (t2 < 1.0E-5) {
-	      return null;
-	    }
-	    
-	    double minT = t1;
-	    Vec normal = ray.add(t1).sub(center).normalize();
-	    boolean isWithin = false;
-	    
-	    if (t1 < 1.0E-5) 
+	    if (p1 < 0.000001) 
 	    {
-	      minT = t2;
-	      normal = ray.add(t2).sub(center).normalize().neg();
-	      isWithin = true;
+	      sourceIsInside = true;
+	      min = p2;
+	      normal = ray.add(p2).sub(center).normalize().neg();
 	    }
 	    
-	    if (minT > 1.0E8) 
-	    {
-	      return null;
-	    }
-	    
-	    return new Hit(minT, ray.add(minT), normal).setIsWithin(isWithin);
+	    if (min > 10000000) return null;
+	    	    
+	    return new Hit(min, ray.add(min), normal).setIsWithin(sourceIsInside);
 	}
 	
 	private double substituteFromCenter(Point p) {
-		
 	    return p.distSqr(center) - radius * radius;
   	}
 }
